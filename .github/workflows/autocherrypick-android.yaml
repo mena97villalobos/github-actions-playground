@@ -46,13 +46,20 @@ jobs:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
           REPO: ${{ github.repository }}
         run: |
+          # configure git author
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
           SUCCESS_BRANCHES=()
           FAILED_BRANCHES=()
 
-          echo "$LABELS" | while read label; do
+          # Ensure we iterate lines in the current shell (no subshell)
+          IFS=$'\n'
+          while read -r label; do
             [ -z "$label" ] && continue
 
-            if [[ "$label" =~ ^CP:\ (.+)$ ]]; then
+            # allow optional space after "CP:"
+            if [[ "$label" =~ ^CP:\ ?(.+)$ ]]; then
               target_branch="${BASH_REMATCH[1]}"
               echo "🔍 Found target branch label: $target_branch"
 
@@ -68,6 +75,7 @@ jobs:
                   git push origin "$new_branch"
                   SUCCESS_BRANCHES+=("$target_branch")
 
+                  # create PR (gh should pick up token from env)
                   gh pr create \
                     --base "$target_branch" \
                     --head "$new_branch" \
@@ -83,11 +91,24 @@ jobs:
                 FAILED_BRANCHES+=("$target_branch (not found)")
               fi
             fi
-          done
+          done <<< "$LABELS"
 
-          # Save results to outputs
-          echo "success_branches=${SUCCESS_BRANCHES[*]}" >> $GITHUB_OUTPUT
-          echo "failed_branches=${FAILED_BRANCHES[*]}" >> $GITHUB_OUTPUT
+          # Write outputs as multiline values using GITHUB_OUTPUT
+          {
+            echo "success_branches<<EOF"
+            for b in "${SUCCESS_BRANCHES[@]}"; do
+              echo "$b"
+            done
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "failed_branches<<EOF"
+            for b in "${FAILED_BRANCHES[@]}"; do
+              echo "$b"
+            done
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Comment results on original PR
         if: always()
@@ -97,25 +118,35 @@ jobs:
           SUCCESS_BRANCHES: ${{ steps.cherry.outputs.success_branches }}
           FAILED_BRANCHES: ${{ steps.cherry.outputs.failed_branches }}
         run: |
-          COMMENT="### 🧩 Cherry-pick Summary for #${PR_NUMBER}\n"
+          COMMENT="### 🧩 Cherry-pick Summary for #${PR_NUMBER}\n\n"
 
+          # Add successful cherry-picks
           if [ -n "$SUCCESS_BRANCHES" ]; then
             COMMENT+="✅ **Successful cherry-picks:**\n"
-            for branch in $SUCCESS_BRANCHES; do
+            while IFS= read -r branch; do
+              [ -z "$branch" ] && continue
               COMMENT+="- \`${branch}\`\n"
-            done
+            done <<< "$SUCCESS_BRANCHES"
+            COMMENT+="\n"
           fi
 
+          # Add failed or skipped cherry-picks
           if [ -n "$FAILED_BRANCHES" ]; then
-            COMMENT+="\n⚠️ **Failed or skipped cherry-picks:**\n"
-            for branch in $FAILED_BRANCHES; do
+            COMMENT+="⚠️ **Failed or skipped cherry-picks:**\n"
+            while IFS= read -r branch; do
+              [ -z "$branch" ] && continue
               COMMENT+="- \`${branch}\`\n"
-            done
+            done <<< "$FAILED_BRANCHES"
+            COMMENT+="\n"
           fi
 
+          # If no results found
           if [ -z "$SUCCESS_BRANCHES" ] && [ -z "$FAILED_BRANCHES" ]; then
-            COMMENT+="No valid \`CP:\` labels found. Nothing to cherry-pick."
+            COMMENT+="No valid \`CP:\` labels found. Nothing to cherry-pick.\n"
           fi
 
+          # Output for debugging/log
           echo -e "$COMMENT"
+
+          # Post comment on the original PR
           gh pr comment "$PR_NUMBER" --body "$COMMENT"
