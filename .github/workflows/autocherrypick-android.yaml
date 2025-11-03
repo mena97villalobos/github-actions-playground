@@ -13,7 +13,7 @@ jobs:
   cherry-pick:
     if: >
       github.event.pull_request.merged == true &&
-      github.event.pull_request.base.ref == 'feature/cherrypick-automation-trunk' &&
+      github.event.pull_request.base.ref == 'trunk' &&
       contains(join(fromJson(toJson(github.event.pull_request.labels)).*.name, ','), 'cherry_pick')
     runs-on: ubuntu-latest
 
