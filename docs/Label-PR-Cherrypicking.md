@@ -1,4 +1,4 @@
-# Cherry Pick on Label --- GitHub Action Documentation
+# Cherry Pick on Label GitHub Action
 
 ## Overview
 

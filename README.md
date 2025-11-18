@@ -8,11 +8,11 @@ backporting changes.
 
 The automation is designed to:
 
--   Detect merged PRs that require cherry-picking\
--   Validate target branches\
--   Create dedicated cherry-pick branches\
--   Perform cherry-pick operations with conflict handling\
--   Open new pull requests for each cherry-pick\
+-   Detect merged PRs that require cherry-picking
+-   Validate target branches
+-   Create dedicated cherry-pick branches
+-   Perform cherry-pick operations with conflict handling
+-   Open new pull requests for each cherry-pick
 -   Comment detailed results back on the original PR
 
 This improves consistency, reduces operational burden, and enhances the
@@ -27,12 +27,14 @@ release engineering workflow.
 Automatically cherry-picks a merged pull request when a label starting
 with `CP:` is applied.
 
--   Extracts merge commit SHA\
--   Parses target branch from the label (`CP: branch-name`)\
--   Validates target branch exists\
--   Creates a new cherry-pick branch\
--   Opens a PR toward the target branch\
+-   Extracts merge commit SHA
+-   Parses target branch from the label (`CP: branch-name`)
+-   Validates target branch exists
+-   Creates a new cherry-pick branch
+-   Opens a PR toward the target branch
 -   Posts a summary back to the original PR
+
+Proper documentation can be found on [`docs/Label-PR-Cherrypicking.md`](./docs/Label-PR-Cherrypicking.md)
 
 ------------------------------------------------------------------------
 
@@ -42,38 +44,26 @@ Automatically cherry-picks PRs into predefined branches immediately
 after merging into `trunk`. Ideal for continuous maintenance across
 stable release lines.
 
-------------------------------------------------------------------------
-
-## 📚 Additional Documentation
-
-  -------------------------------------------------------------------------------------------------------------------------------
-  Feature               Description                        Link
-  --------------------- ---------------------------------- ----------------------------------------------------------------------
-  **Label-based         Cherry-pick triggered by `CP:`     [`docs/Label-PR-Cherrypicking.md`](./docs/Label-PR-Cherrypicking.md)
-  Cherry-Picking**      labels                             
-
-  **PR-based            Automatically cherry-picks upon    [`docs/PR-Cherrypicking.md`](./docs/PR-Cherrypicking.md)
-  Cherry-Picking**      merge                              
-  -------------------------------------------------------------------------------------------------------------------------------
+Proper documentation can be found on [`docs/PR-Cherrypicking.md`](./docs/PR-Cherrypicking.md)
 
 ------------------------------------------------------------------------
 
 ## Goals of This Repository
 
--   Simplify backport workflows\
--   Increase developer efficiency\
--   Reduce manual cherry-pick errors\
--   Ensure consistent branch maintenance\
+-   Simplify backport workflows
+-   Increase developer efficiency
+-   Reduce manual cherry-pick errors
+-   Ensure consistent branch maintenance
 -   Provide clear visibility through automated PR comments
 
 ------------------------------------------------------------------------
 
 ## Tech Used
 
--   **GitHub Actions**\
--   **GitHub CLI (`gh`)**\
--   **Shell scripting**\
--   **Git automation**\
+-   **GitHub Actions**
+-   **GitHub CLI (`gh`)**
+-   **Shell scripting**
+-   **Git automation**
 -   **Branch and release management tooling**
 
 ------------------------------------------------------------------------
