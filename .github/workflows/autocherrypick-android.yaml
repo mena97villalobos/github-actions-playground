@@ -54,7 +54,7 @@ jobs:
           FAILED_BRANCHES=()
 
           # Ensure we iterate lines in the current shell (no subshell)
-          IFS=$'\n'
+          IFS=$'<br/>'
           while read -r label; do
             [ -z "$label" ] && continue
 
@@ -118,31 +118,31 @@ jobs:
           SUCCESS_BRANCHES: ${{ steps.cherry.outputs.success_branches }}
           FAILED_BRANCHES: ${{ steps.cherry.outputs.failed_branches }}
         run: |
-          COMMENT="### 🧩 Cherry-pick Summary for #${PR_NUMBER}\n\n"
+          COMMENT="### 🧩 Cherry-pick Summary for #${PR_NUMBER}<br/><br/>"
 
           # Add successful cherry-picks
           if [ -n "$SUCCESS_BRANCHES" ]; then
-            COMMENT+="✅ **Successful cherry-picks:**\n"
+            COMMENT+="✅ **Successful cherry-picks:**<br/>"
             while IFS= read -r branch; do
               [ -z "$branch" ] && continue
-              COMMENT+="- \`${branch}\`\n"
+              COMMENT+="- \`${branch}\`<br/>"
             done <<< "$SUCCESS_BRANCHES"
-            COMMENT+="\n"
+            COMMENT+="<br/>"
           fi
 
           # Add failed or skipped cherry-picks
           if [ -n "$FAILED_BRANCHES" ]; then
-            COMMENT+="⚠️ **Failed or skipped cherry-picks:**\n"
+            COMMENT+="⚠️ **Failed or skipped cherry-picks:**<br/>"
             while IFS= read -r branch; do
               [ -z "$branch" ] && continue
-              COMMENT+="- \`${branch}\`\n"
+              COMMENT+="- \`${branch}\`<br/>"
             done <<< "$FAILED_BRANCHES"
-            COMMENT+="\n"
+            COMMENT+="<br/>"
           fi
 
           # If no results found
           if [ -z "$SUCCESS_BRANCHES" ] && [ -z "$FAILED_BRANCHES" ]; then
-            COMMENT+="No valid \`CP:\` labels found. Nothing to cherry-pick.\n"
+            COMMENT+="No valid \`CP:\` labels found. Nothing to cherry-pick.<br/>"
           fi
 
           # Output for debugging/log
