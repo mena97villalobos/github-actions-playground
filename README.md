@@ -22,7 +22,7 @@ release engineering workflow.
 
 ## Key Workflows
 
-### **1. Cherry Pick on Label**
+### **1. Cherry-Pick on Label**
 
 Automatically cherry-picks a merged pull request when a label starting
 with `CP:` is applied.
@@ -34,17 +34,46 @@ with `CP:` is applied.
 -   Opens a PR toward the target branch
 -   Posts a summary back to the original PR
 
-Proper documentation can be found on [`docs/Label-PR-Cherrypicking.md`](./docs/Label-PR-Cherrypicking.md)
+Proper documentation can be found on [`docs/cherrypicking-on-label.md`](./docs/cherrypicking-on-label.md)
 
 ------------------------------------------------------------------------
 
-### **2. Automatic Cherry-Pick on Merge**
+### **2. Cherry-Pick on PR Merge**
 
 Automatically cherry-picks PRs into predefined branches immediately
 after merging into `trunk`. Ideal for continuous maintenance across
 stable release lines.
 
-Proper documentation can be found on [`docs/PR-Cherrypicking.md`](./docs/PR-Cherrypicking.md)
+Proper documentation can be found on [`docs/cherrypicking-on-pull-request.md`](./docs/cherrypicking-on-pull-request.md)
+
+------------------------------------------------------------------------
+
+### **3. Create CP Label on Release Branch Creation**
+
+When a new branch starting with release is created, this workflow
+automatically:
+
+- Creates a label named CP: <branch-name>
+- Assigns a red color for visibility
+- Adds a description with the branch name
+- Provides consistent label naming for cherry-picking workflows
+
+This ensures release branches are automatically prepared for
+label-triggered cherry-picking.
+
+Full documentation can be found on [`docs/create-cp-label.md`](./docs/create-release-label.md)
+
+------------------------------------------------------------------------
+
+### **4. Delete CP Label on Release Branch Deletion**
+
+When a `release*` branch is deleted, this workflow:
+- Automatically removes the corresponding CP: <branch-name> label
+- Prevents stale or orphaned labels from accumulating
+- Keeps repository metadata clean and aligned with active release
+branches
+
+Full documentation can be found on [`docs/delete-cp-label.md`](./docs/delete-release-label.md)
 
 ------------------------------------------------------------------------
 
