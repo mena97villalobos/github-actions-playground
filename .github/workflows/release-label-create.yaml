@@ -3,7 +3,7 @@ name: Create CP Label on Release Branch
 on:
   create:
     branches:
-      - 'release*' # triggers when any release* branch is created
+      - '*'
 
 jobs:
   create-label:
@@ -12,6 +12,8 @@ jobs:
     permissions:
       issues: write
       contents: read
+
+    if: startsWith(github.ref, 'refs/heads/release')
 
     steps:
       - name: Extract branch name
@@ -27,7 +29,7 @@ jobs:
           script: |
             const branchName = "${{ steps.branch.outputs.name }}";
             const labelName = `CP: ${branchName}`;
-            const description = "Label for automatic cherry picking branch ${branchName}";
+            const description = `Label for automatic cherry picking on branch ${branchName}`;
 
             try {
               await github.rest.issues.createLabel({
