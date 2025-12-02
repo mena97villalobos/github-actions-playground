@@ -1,0 +1,77 @@
+name: Create Release Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: "Select the scenario"
+        required: true
+        type: choice
+        options:
+          - trunk
+          - new-release
+          - hotfix
+          - new-release-build
+
+      version:
+        description: "Version (format: X.Y.Z)"
+        required: true
+        type: string
+        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+
+      tag:
+        description: "Tag name"
+        required: true
+        type: string
+
+      base_branch:
+        description: "Base branch (searchable)"
+        required: true
+        type: choice
+        options: ${{ github.event.repository.default_branch }}
+
+      environment:
+        description: "Select environment"
+        required: true
+        type: choice
+        options:
+          - debug
+          - staging
+          - prod
+
+jobs:
+  run-workflow:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Print Inputs Report
+        run: |
+          echo "### Inputs Received ###"
+          echo "Scenario: ${{ inputs.scenario }}"
+          echo "Version:  ${{ inputs.version }}"
+          echo "Tag:      ${{ inputs.tag }}"
+          echo "Base:     ${{ inputs.base_branch }}"
+          echo "Env:      ${{ inputs.environment }}"
+
+      - name: Create and Push Release Branch
+        run: |
+          RELEASE_BRANCH="release/${{ inputs.version }}"
+          BASE="${{ inputs.base_branch }}"
+
+          echo "Creating branch: $RELEASE_BRANCH from $BASE"
+
+          git checkout "$BASE"
+          git pull origin "$BASE"
+
+          git checkout -b "$RELEASE_BRANCH"
+
+          # Optional: tagging
+          git tag "${{ inputs.tag }}"
+
+          git push origin "$RELEASE_BRANCH"
+          git push origin "${{ inputs.tag }}"
