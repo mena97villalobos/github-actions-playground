@@ -38,6 +38,9 @@ on:
           - staging
           - prod
 
+permissions:
+  contents: write
+
 jobs:
   run-workflow:
     runs-on: ubuntu-latest
